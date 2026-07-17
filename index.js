@@ -135,6 +135,8 @@ async function startBot() {
             const plugin = commandsMap.get(cmdName.toLowerCase());
             if (!plugin) continue;
 
+            if (getMode() === 'self' && !msg.key.fromMe) continue;
+
             try {
                 await sock.sendPresenceUpdate('composing', chatId);
                 await plugin.handler(sock, msg, args, { chatId, config, commandsMap });
