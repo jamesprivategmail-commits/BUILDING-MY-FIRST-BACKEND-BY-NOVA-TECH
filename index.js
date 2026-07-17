@@ -120,8 +120,7 @@ async function startBot() {
         if (type !== 'notify') return;
 
         for (const msg of messages) {
-            if (!msg.message || msg.key.fromMe) continue;
-
+            if (!msg.message) continue;
             const chatId = msg.key.remoteJid;
             const text =
                 msg.message.conversation ||
