@@ -19,7 +19,7 @@ import { printLog } from './lib/print.js';
 import { loadPlugins } from './lib/pluginLoader.js';
 import { getMode, isAntilinkEnabled, getPrefix, isWelcomeEnabled, isGoodbyeEnabled } from './lib/settings.js';
 import { isSenderAdmin } from './lib/groupUtils.js';
-import { isRateLimited } from './lib/antiban.js';
+import { isRateLimited, wrapSendMessage } from './lib/antiban.js';
 import { app, server, PORT, setPairingHandler, setStatusProvider } from './lib/server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
