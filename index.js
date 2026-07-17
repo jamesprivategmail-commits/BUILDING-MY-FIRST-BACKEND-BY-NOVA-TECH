@@ -201,8 +201,7 @@ async function startBot() {
             if (getMode() === 'self' && !msg.key.fromMe) continue;
 
             const senderJid = msg.key.participant || msg.key.remoteJid;
-            if (!msg.key.fromMe && isRateLimited(senderJid)) continue;
-
+            if (isRateLimited(senderJid, msg.key.fromMe)) continue;
             try {
                 await sock.sendPresenceUpdate('composing', chatId);
                 await plugin.handler(sock, msg, args, { chatId, config, commandsMap });
