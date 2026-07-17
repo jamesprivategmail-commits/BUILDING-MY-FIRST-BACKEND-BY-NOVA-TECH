@@ -5,6 +5,7 @@ export default {
     async handler(sock, msg, args, { chatId, config }) {
         const text =
             `*${config.botOwner}*\n\n` +
+            `📞 Number: wa.me/2348087316579\n` +
             `📢 Follow: https://whatsapp.com/channel/0029VbDJE4mFy729upfVIu0Q`;
         await sock.sendMessage(chatId, { text }, { quoted: msg });
     },
