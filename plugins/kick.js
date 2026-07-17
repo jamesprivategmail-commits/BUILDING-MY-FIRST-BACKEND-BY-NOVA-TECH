@@ -1,4 +1,5 @@
 import { isSenderAdmin } from '../lib/groupUtils.js';
+import { isAdminActionCoolingDown } from '../lib/antiban.js';
 
 export default {
     command: 'kick',
