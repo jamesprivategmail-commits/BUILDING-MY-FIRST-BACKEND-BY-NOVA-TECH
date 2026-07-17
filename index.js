@@ -17,8 +17,9 @@ import NodeCache from 'node-cache';
 import config from './config.js';
 import { printLog } from './lib/print.js';
 import { loadPlugins } from './lib/pluginLoader.js';
-import { getMode, isAntilinkEnabled } from './lib/settings.js';
+import { getMode, isAntilinkEnabled, getPrefix, isWelcomeEnabled, isGoodbyeEnabled } from './lib/settings.js';
 import { isSenderAdmin } from './lib/groupUtils.js';
+import { isRateLimited } from './lib/antiban.js';
 import { app, server, PORT, setPairingHandler, setStatusProvider } from './lib/server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -118,6 +119,31 @@ async function startBot() {
         }
     });
 
+    sock.ev.on('group-participants.update', async (event) => {
+        try {
+            const { id: groupId, participants, action } = event;
+            if (action === 'add' && isWelcomeEnabled(groupId)) {
+                const metadata = await sock.groupMetadata(groupId);
+                for (const p of participants) {
+                    await sock.sendMessage(groupId, {
+                        text: `👋 Welcome @${p.split('@')[0]} to *${metadata.subject}*!`,
+                        mentions: [p],
+                    });
+                }
+            }
+            if (action === 'remove' && isGoodbyeEnabled(groupId)) {
+                for (const p of participants) {
+                    await sock.sendMessage(groupId, {
+                        text: `👋 @${p.split('@')[0]} has left the group.`,
+                        mentions: [p],
+                    });
+                }
+            }
+        } catch (err) {
+            printLog('error', `group-participants.update failed: ${err.message}`);
+        }
+    });
+
     sock.ev.on('messages.upsert', async ({ messages, type }) => {
         if (type !== 'notify') return;
 
@@ -144,13 +170,17 @@ async function startBot() {
                 }
             }
 
-            if (!text.startsWith(config.prefix)) continue;
+            const activePrefix = getPrefix() || config.prefix;
+            if (!text.startsWith(activePrefix)) continue;
 
-            const [cmdName, ...args] = text.slice(config.prefix.length).trim().split(/\s+/);
+            const [cmdName, ...args] = text.slice(activePrefix.length).trim().split(/\s+/);
             const plugin = commandsMap.get(cmdName.toLowerCase());
             if (!plugin) continue;
 
             if (getMode() === 'self' && !msg.key.fromMe) continue;
+
+            const senderJid = msg.key.participant || msg.key.remoteJid;
+            if (!msg.key.fromMe && isRateLimited(senderJid)) continue;
 
             try {
                 await sock.sendPresenceUpdate('composing', chatId);
