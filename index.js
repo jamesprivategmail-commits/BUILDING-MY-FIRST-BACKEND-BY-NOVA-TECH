@@ -86,6 +86,9 @@ async function startBot() {
 
     currentSock = sock;
 
+    // Anti-ban: queue + humanize all outgoing messages
+    wrapSendMessage(sock);
+
     // Wire the web pairing route to this live socket.
     setPairingHandler((number) => requestPairingCode(sock, number));
 
