@@ -1,7 +1,12 @@
 export default {
     command: 'unblock',
-    description: 'Reply to a user or send .unblock <number> to unblock them',
+    description: 'Reply to a user or send .unblock <number> to unblock them (owner only)',
     async handler(sock, msg, args, { chatId }) {
+        if (!msg.key.fromMe) {
+            await sock.sendMessage(chatId, { text: '🚫 Owner-only command.' }, { quoted: msg });
+            return;
+        }
+
         let targetJid;
         const quotedParticipant = msg.message?.extendedTextMessage?.contextInfo?.participant;
         if (quotedParticipant) {
