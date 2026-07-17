@@ -12,7 +12,7 @@ export default {
             lines.push(`• ${config.prefix}${plugin.command} — ${plugin.description || ''}`);
         }
 
-        const text = `*${config.botName}*\n\n${lines.join('\n')}`;
+        const text = `*${config.botName}*\n\n${lines.join('\n')}\n\n📢 Follow: https://whatsapp.com/channel/0029VbDJE4mFy729upfVIu0Q`;
         await sock.sendMessage(chatId, { text }, { quoted: msg });
     },
 };
