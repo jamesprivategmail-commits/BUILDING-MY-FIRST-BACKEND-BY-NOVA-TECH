@@ -118,8 +118,9 @@ async function startBot() {
                 return;
             }
 
-            printLog('warning', `Connection closed (code ${statusCode}). Reconnecting in 5s...`);
-            setTimeout(() => startBot().catch((e) => printLog('error', e.message)), 5000);
+            const delay = getReconnectDelay();
+            printLog('warning', `Connection closed (code ${statusCode}). Reconnecting in ${Math.round(delay / 1000)}s...`);
+            setTimeout(() => startBot().catch((e) => printLog('error', e.message)), delay);
         }
     });
 
