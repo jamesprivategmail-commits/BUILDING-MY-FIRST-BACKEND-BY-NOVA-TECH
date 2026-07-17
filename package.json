@@ -1,13 +1,23 @@
 {
-  "name": "nova-tech-backend",
+  "name": "nova-tech-v2",
   "version": "1.0.0",
-  "description": "NOVA TECH Backend",
-  "main": "server.js",
+  "description": "Nova Tech V2 - WhatsApp multi-device bot with easy web pairing",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "@whiskeysockets/baileys": "^6.7.9",
+    "awesome-phonenumber": "^7.1.0",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pino": "^9.3.2",
+    "qrcode": "^1.5.4"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
