@@ -17,6 +17,7 @@ import NodeCache from 'node-cache';
 import config from './config.js';
 import { printLog } from './lib/print.js';
 import { loadPlugins } from './lib/pluginLoader.js';
+import { getMode } from './lib/settings.js';
 import { app, server, PORT, setPairingHandler, setStatusProvider } from './lib/server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
