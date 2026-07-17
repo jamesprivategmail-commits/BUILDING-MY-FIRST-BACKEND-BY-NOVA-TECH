@@ -13,6 +13,14 @@ export default {
         }
 
         const text = `*${config.botName}*\n\n${lines.join('\n')}\n\n📢 Follow: https://whatsapp.com/channel/0029VbDJE4mFy729upfVIu0Q`;
-        await sock.sendMessage(chatId, { text }, { quoted: msg });
+
+        await sock.sendMessage(
+            chatId,
+            {
+                image: { url: 'https://i.postimg.cc/rFNpnfLp/ec3d253c8d0e4cd9684279e98b02b343.jpg' },
+                caption: text,
+            },
+            { quoted: msg }
+        );
     },
 };
