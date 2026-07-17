@@ -17,7 +17,7 @@ import NodeCache from 'node-cache';
 import config from './config.js';
 import { printLog } from './lib/print.js';
 import { loadPlugins } from './lib/pluginLoader.js';
-import { getMode, isAntilinkEnabled, getPrefix, isWelcomeEnabled, isGoodbyeEnabled } from './lib/settings.js';
+import { getMode, isAntilinkEnabled, getPrefix, isWelcomeEnabled, isGoodbyeEnabled, isAnticallEnabled } from './lib/settings.js';
 import { isSenderAdmin } from './lib/groupUtils.js';
 import { isRateLimited, wrapSendMessage } from './lib/antiban.js';
 import { app, server, PORT, setPairingHandler, setStatusProvider } from './lib/server.js';
@@ -119,6 +119,22 @@ async function startBot() {
 
             printLog('warning', `Connection closed (code ${statusCode}). Reconnecting in 5s...`);
             setTimeout(() => startBot().catch((e) => printLog('error', e.message)), 5000);
+        }
+    });
+
+    sock.ev.on('call', async (calls) => {
+        if (!isAnticallEnabled()) return;
+        for (const call of calls) {
+            if (call.status !== 'offer') continue;
+            try {
+                await sock.rejectCall(call.id, call.from);
+                await sock.sendMessage(call.from, {
+                    text: '📵 Calls are not accepted by this bot. Please send a text message instead.',
+                });
+                printLog('info', `Anticall: rejected call from ${call.from}`);
+            } catch (err) {
+                printLog('error', `Anticall failed: ${err.message}`);
+            }
         }
     });
 
