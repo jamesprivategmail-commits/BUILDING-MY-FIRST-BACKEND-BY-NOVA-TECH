@@ -99,6 +99,7 @@ async function startBot() {
 
         if (connection === 'open') {
             isConnected = true;
+            resetReconnectAttempts();
             printLog('success', `${config.botName} connected as ${sock.user?.id}`);
         }
 
