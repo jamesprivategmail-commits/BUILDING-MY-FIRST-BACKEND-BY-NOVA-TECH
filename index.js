@@ -17,7 +17,8 @@ import NodeCache from 'node-cache';
 import config from './config.js';
 import { printLog } from './lib/print.js';
 import { loadPlugins } from './lib/pluginLoader.js';
-import { getMode } from './lib/settings.js';
+import { getMode, isAntilinkEnabled } from './lib/settings.js';
+import { isSenderAdmin } from './lib/groupUtils.js';
 import { app, server, PORT, setPairingHandler, setStatusProvider } from './lib/server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -128,6 +129,20 @@ async function startBot() {
                 msg.message.extendedTextMessage?.text ||
                 msg.message.imageMessage?.caption ||
                 '';
+
+            if (chatId.endsWith('@g.us') && isAntilinkEnabled(chatId) && !msg.key.fromMe) {
+                const linkRegex = /(https?:\/\/|www\.|chat\.whatsapp\.com|t\.me)\S+/i;
+                if (linkRegex.test(text)) {
+                    const senderJid = msg.key.participant || msg.key.remoteJid;
+                    const senderIsAdmin = await isSenderAdmin(sock, chatId, senderJid);
+                    if (!senderIsAdmin) {
+                        try {
+                            await sock.sendMessage(chatId, { delete: msg.key });
+                        } catch (_e) {}
+                        continue;
+                    }
+                }
+            }
 
             if (!text.startsWith(config.prefix)) continue;
 
