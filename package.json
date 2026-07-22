@@ -1,6 +1,6 @@
 {
   "name": "nova-tech-v2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nova Tech V2 - WhatsApp multi-device bot with easy web pairing",
   "type": "module",
   "main": "index.js",
