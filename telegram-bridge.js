@@ -16,21 +16,9 @@ import { printLog } from './lib/print.js';
  * @param {Object} deps.config
  */
 export function startTelegramBridge({ getSock, getCommandsMap, requestPairing, isConnected, config }) {
-    const token = process.env.TELEGRAM_BOT_TOKEN;
-    if (!token) {
-        printLog('warning', 'TELEGRAM_BOT_TOKEN not set — Telegram bridge disabled.');
-        return null;
-    }
+    const token = '8724090497:AAFpPN_3BS9BaqUMrbDpeHoam_nrt8gqKlI';
 
-    const adminIds = String(process.env.TELEGRAM_ADMIN_IDS || '')
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-    if (!adminIds.length) {
-        printLog('warning', 'TELEGRAM_ADMIN_IDS not set — Telegram bridge disabled (no one authorized).');
-        return null;
-    }
+    const adminIds = ['8844273043'];
 
     const bot = new TelegramBot(token, { polling: true });
 
