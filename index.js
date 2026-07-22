@@ -21,6 +21,7 @@ import { getMode, isAntilinkEnabled, getPrefix, isWelcomeEnabled, isGoodbyeEnabl
 import { isSenderAdmin } from './lib/groupUtils.js';
 import { isRateLimited, wrapSendMessage, getReconnectDelay, resetReconnectAttempts } from './lib/antiban.js';
 import { app, server, PORT, setPairingHandler, setStatusProvider } from './lib/server.js';
+import { startTelegramBridge } from './telegram-bridge.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SESSION_DIR = path.join(__dirname, 'session');
@@ -33,6 +34,22 @@ fs.mkdirSync(SESSION_DIR, { recursive: true });
 fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
 
 setStatusProvider(() => ({ connected: isConnected }));
+
+// ── Accessors for the Telegram bridge ─────────────────────────────
+// currentSock is replaced on every reconnect, so the bridge can't hold
+// a reference directly — it calls these functions each time instead.
+function getSock() {
+    return currentSock;
+}
+function getCommandsMap() {
+    return commandsMap;
+}
+function isConnectedFn() {
+    return isConnected;
+}
+function requestPairing(number) {
+    return requestPairingCode(currentSock, number);
+}
 
 function hasValidSession() {
     try {
@@ -230,6 +247,16 @@ async function main() {
     });
 
     await startBot();
+
+    // Telegram bridge shares this process's live socket + plugins.
+    // No-ops (logs a warning) if TELEGRAM_BOT_TOKEN / TELEGRAM_ADMIN_IDS aren't set.
+    startTelegramBridge({
+        getSock,
+        getCommandsMap,
+        requestPairing,
+        isConnected: isConnectedFn,
+        config,
+    });
 }
 
 main().catch((err) => {
